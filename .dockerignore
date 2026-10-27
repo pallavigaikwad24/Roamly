@@ -1,0 +1,18 @@
+# Secrets must never land in an image layer
+.env
+.env.*
+!.env.example
+Server/src/config/*.json
+
+.git
+.gitignore
+node_modules
+Client/dist
+Server/public/logs
+Server/public/hotelPictures/temp
+Server/public/hotelPictures/upload
+npm-debug.log*
+Dockerfile
+.dockerignore
+docker-compose*.yml
+Readme.md

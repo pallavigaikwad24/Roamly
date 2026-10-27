@@ -1,0 +1,275 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #019ee3;
+}
+
+#login-component {
+    width: 60vw;
+    height: 70vh;
+    border-radius: 20px;
+    background-color: white;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 120px;
+}
+
+#image-component {
+    width: 50%;
+    height: 30%;
+    font-style: 1rem;
+    color: white;
+    position: absolute;
+    text-align: center;
+    font-family: "Norican", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.image-sub-title {
+    font-size: 1rem;
+    font-family: "PT Sans Narrow", serif;
+    font-style: normal;
+}
+
+#login-front {
+    width: 100%;
+    height: 100%;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+#login-input {
+    width: 50%;
+    height: 85%;
+    margin: 2rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.error-msg {
+    font-size: 12px;
+    /* margin-top: -0.9rem; */
+}
+
+#alert {
+    position: absolute;
+    top: 4rem;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    align-items: center;
+    text-align: center;
+}
+
+.redirectOption {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pair {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.with-err {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 15rem;
+}
+
+.error-msg {
+    color: red;
+    position: absolute;
+    bottom: -15px;
+    left: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 190px;
+}
+
+.error-msg.password {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    overflow: visible;
+}
+
+@media (max-width: 600px) {
+    #login-front {
+        display: none;
+    }
+
+    .error-msg {
+        position: absolute;
+        bottom: -15px;
+        left: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 150px;
+    }
+
+    #image-component {
+        font-size: 10px;
+        margin-top: -110px;
+        margin-left: 100%;
+    }
+
+    .image-sub-title {
+        display: none;
+    }
+
+    #login-component {
+        width: 85%;
+        height: 30% !important;
+        margin-left: 7%;
+        margin-top: 50px !important;
+        text-align: center;
+    }
+
+    body {
+        text-align: center;
+    }
+
+    #login-input {
+        width: 100%;
+    }
+
+    .pair {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .text-field {
+        width: 75% !important;
+        margin-left: 5px !important;
+        min-width: 0 !important;
+    }
+
+    .with-err {
+        width: 10rem;
+    }
+
+    .text-field label {
+        font-size: 12px;
+        padding-top: 4px;
+    }
+
+    .IconButton {
+        font-size: 15px !important;
+    }
+}
+
+@media (min-width: 600px) and (max-width: 1024px) {
+    #login-front {
+        display: none;
+    }
+
+    #image-component {
+        font-size: 15px;
+        margin-top: -160px;
+        margin-left: 100%;
+    }
+
+    .image-sub-title {
+        display: none;
+    }
+
+    #login-component {
+        width: 100%;
+        height: 30% !important;
+        margin-top: 50px !important;
+        text-align: center;
+    }
+
+    body {
+        text-align: center;
+    }
+
+    #login-input {
+        width: 100%;
+    }
+
+    .pair {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .text-field {
+        width: 200px !important;
+    }
+}
+
+
+@media (min-width: 1024px) and (max-width: 1500px) {
+
+    #login-component {
+        width: 90%;
+        height: 40% !important;
+        margin-top: 50px !important;
+        text-align: center;
+        margin-left: 5%;
+    }
+
+    body {
+        text-align: center;
+    }
+
+    #login-input {
+        width: 100%;
+    }
+
+    .pair {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .text-field {
+        width: 200px !important;
+    }
+}
+
+@media (max-width: 1024px) and (max-height: 600px) {
+    .pair {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #login-component {
+        width: 100%;
+        height: 40% !important;
+        margin-top: 50px !important;
+        text-align: center;
+        margin-left: 5%;
+    }
+
+
+    #login-input {
+        width: 80%;
+    }
+
+    #image-component {
+        display: none;
+    }
+
+}

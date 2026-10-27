@@ -1,0 +1,155 @@
+# Every credential is a ${REFERENCE} resolved from .env at run time - no secret
+# value and no secret fallback appears in this file, so it is safe to commit.
+#
+# Two conventions are used deliberately:
+#   ${VAR:?message}  required. Compose aborts with `message` if it is unset or
+#                    empty, so a missing credential fails immediately instead of
+#                    silently falling back to something weak.
+#   $$VAR            a literal `$` passed through to the container, which
+#                    expands it from its own environment. Compose never
+#                    substitutes it, so the value stays out of
+#                    `docker compose config` output.
+#
+# Only the app publishes a port. Postgres and Redis are reachable only on the
+# internal compose network, by service name.
+
+# ---------------------------------------------------------------- shared bits -
+# The app and the migration job run the same image with the same settings, so
+# both are defined once here and merged in with <<: *anchor.
+x-app-image: &app-image
+  build:
+    context: .
+    args:
+      # Build-time, not a secret: an empty base URL makes the client's requests
+      # relative so the API and the React app share one origin. Override via
+      # DOCKER_VITE_BACKEND_URL only if you split them onto separate hosts.
+      VITE_BACKEND_URL: ${DOCKER_VITE_BACKEND_URL-}
+  image: roamly-app:latest
+
+x-backend-env: &backend-env
+  # Service names, not localhost: inside the compose network these resolve to
+  # the respective containers. They override whatever .env says, because .env
+  # holds the values used when running on the host.
+  NODE_ENV: production
+  DB_HOST: postgres
+  DB_PORT: 5432
+  DB_DIALECT: postgres
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:?DB_NAME must be set in .env}
+      POSTGRES_USER: ${DB_USER:?DB_USER must be set in .env}
+      # _FILE variant, so the password is never part of this container's
+      # environment and so never shows up in `docker inspect postgres`.
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # $$POSTGRES_USER is expanded by the container from the variables set above,
+    # so neither the user nor the database name is rendered into compose output.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # A stock redis-server has no password set, so it rejects the app's AUTH
+    # with "called without any password configured for the default user".
+    # Giving Redis the same credential the app already uses fixes that without
+    # turning authentication off.
+    command: sh -c 'exec redis-server --save 60 1 --requirepass "$$REDIS_PASSWORD"'
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set in .env}
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  # Runs once and exits. It creates every table, including the `sessions` table
+  # that connect-pg-simple expects but does not create itself - without this,
+  # logins fail against a fresh database. The app waits for it to succeed.
+  migrate:
+    <<: *app-image
+    command:
+      - npx
+      - sequelize-cli
+      - db:migrate
+      - --config=Server/src/config/config.js
+      - --migrations-path=Server/src/migrations
+      - --models-path=Server/src/models
+    env_file: [.env]
+    environment: *backend-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    <<: *app-image
+    restart: unless-stopped
+    # Host port only. Bind to 127.0.0.1 by setting APP_BIND=127.0.0.1 in .env to
+    # keep it off the local network entirely.
+    ports:
+      - "${APP_BIND:-0.0.0.0}:${PORT:-3000}:3000"
+    env_file: [.env]
+    environment:
+      <<: *backend-env
+      PORT: 3000
+      # Blanked deliberately. .env sets this to Vite's port for `npm run dev`;
+      # in the container the API and the React app share an origin, so the
+      # request's own host is the correct base for emailed links.
+      APP_PUBLIC_URL: ""
+
+      # Absolute path, so firebaseAdmin.js loads this file directly instead of
+      # scanning Server/src/config - which is empty in the image, because
+      # .dockerignore keeps the key out of every layer.
+      FIREBASE_SERVICE_ACCOUNT: /run/secrets/firebase-service-account.json
+    secrets:
+      # The .json target is required: firebaseAdmin.js loads the key with
+      # require(), and require() on an extensionless path parses the file as
+      # JavaScript and dies with "Unexpected token ':'".
+      - source: firebase_key
+        target: /run/secrets/firebase-service-account.json
+    volumes:
+      # Written at runtime by multer and winston. Without these, uploaded hotel
+      # images and logs are lost whenever the container is replaced.
+      - uploads:/app/Server/public/hotelPictures/upload
+      - logs:/app/Server/public/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+# A secret rather than a bind mount: a wrong path fails loudly here, whereas a
+# bind mount would silently create a directory and leave Firebase failing for no
+# visible reason. The file is mounted read-only and never enters an image layer.
+# No Firebase key? Delete this block and the `secrets:` entry above -
+# firebaseAdmin.js degrades gracefully and disables push notifications.
+secrets:
+  firebase_key:
+    file: ${FIREBASE_KEY_FILE:?FIREBASE_KEY_FILE must point at your service-account JSON}
+  # Reads the value straight from the environment and presents it to the
+  # container as a file, so no intermediate password file exists on disk.
+  db_password:
+    environment: DB_PASSWORD
+
+volumes:
+  pgdata:
+  redisdata:
+  uploads:
+  logs:

@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+node_modules/
+Client/dist/
+
+# Firebase service-account private keys
+Server/src/config/*.json
+!Server/src/config/*.example.json

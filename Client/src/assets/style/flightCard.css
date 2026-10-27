@@ -1,0 +1,145 @@
+/* FlightTicket.css */
+.flight-ticket {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.ticket-container {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-left {
+    flex: 1;
+    padding-right: 10px;
+}
+
+.upgrade-banner {
+    margin-bottom: 16px;
+}
+
+.upgrade-banner span {
+    color: #059669;
+    font-size: 14px;
+}
+
+.flight-details {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.time-section {
+    min-width: 100px;
+}
+
+.time {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.date {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.flight-path {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.line {
+    flex: 1;
+    height: 2px;
+    background-color: #e5e7eb;
+}
+
+.stops {
+    color: #6b7280;
+    font-size: 14px;
+    text-align: center;
+    padding: 0 8px;
+}
+
+.airlines {
+    margin-top: 12px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.ticket-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 10px;
+    border-left: 1px solid grey;
+}
+
+.included-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.bag-icon {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.price {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.view-details {
+    color: #2563eb;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.2s;
+    background-color: rgb(241, 224, 224);
+    border-radius: 10px;
+}
+
+.view-details:hover {
+    color: #1d4ed8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ticket-container {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .ticket-right {
+        align-items: flex-start;
+    }
+
+    .flight-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .flight-path {
+        width: 100%;
+    }
+}

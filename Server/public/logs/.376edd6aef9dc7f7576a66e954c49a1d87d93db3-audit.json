@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "D:\\Roamly\\Roamly\\Server\\public\\logs\\.376edd6aef9dc7f7576a66e954c49a1d87d93db3-audit.json",
+    "files": [
+        {
+            "date": 1793000452886,
+            "name": "D:\\Roamly\\Roamly\\Server\\public\\logs\\10-26-2026-app.log",
+            "hash": "faab30b02319cb27af9a237144175a76cc1c58333931ba19b68a6e8c0625c49c"
+        }
+    ],
+    "hashType": "sha256"
+}
